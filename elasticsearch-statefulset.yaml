@@ -1,0 +1,41 @@
+  apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    name: elasticsearch
+    namespace: elasticsearch
+  spec:
+    serviceName: "elasticsearch"
+    replicas: 1
+    selector:
+      matchLabels:
+        app: elasticsearch
+    template:
+      metadata:
+        labels:
+          app: elasticsearch
+      spec:
+        containers:
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.5.1
+          ports:
+          - containerPort: 9200
+            name: http
+          - containerPort: 9300
+            name: transport
+          env:
+          - name: discovery.type
+            value: "single-node"
+          - name: ES_JAVA_OPTS
+            value: "-Xms1g -Xmx1g"
+          - name: xpack.security.http.ssl.enabled
+            value: "false"
+          - name: xpack.security.transport.ssl.enabled
+            value: "false"
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+
