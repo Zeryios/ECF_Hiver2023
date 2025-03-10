@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: hello-node-v2
+          image: zeryios272/hello-node-v2:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DB_HOST
+              value: "my-db-instance-url"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USER
+              value: "my-database-user"
+            - name: DB_PASSWORD
+              value: "my-database-password"
+            - name: DB_NAME
+              value: "my-database-name"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-service
+  namespace: default
+spec:
+  selector:
+    app: my-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
