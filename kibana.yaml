@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+  namespace: elasticsearch
+spec:
+  ports:
+    - port: 5601
+      targetPort: 5601
+      protocol: TCP
+  selector:
+    app: kibana
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  namespace: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+        - name: kibana
+          image: docker.elastic.co/kibana/kibana:8.5.1
+          ports:
+            - containerPort: 5601
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: "http://elasticsearch.elasticsearch.svc.cluster.local:9200"
+            - name: ELASTICSEARCH_USERNAME
+              value: "kibana_system"  # Utilise le compte kibana_system
+            - name: ELASTICSEARCH_PASSWORD
+              value: "ZHWOB4I=EL2r5AQgVuCM"  # Remplace par le vrai mot de passe
